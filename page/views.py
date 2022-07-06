@@ -93,14 +93,18 @@ def regist(request):
     email = request.POST['email']
     name = request.POST['name']
     lastname = request.POST['lastname']
-    if password == re_password:
-        excute = members(username = user, password = password, email = email, Name = name, Lastname = lastname)
-        excute.save()
-        template = loader.get_template('success.html')
-        welcome = members.objects.filter(username = user).values()
-        context ={
+    usercheck = members.objects.filter(username = user).values()
+    for user in usercheck:
+        return render(request, 'error_register.html')
+    else:
+        if password == re_password:
+            excute = members(username = user, password = password, email = email, Name = name, Lastname = lastname)
+            excute.save()
+            template = loader.get_template('success.html')
+            welcome = members.objects.filter(username = user).values()
+            context ={
                 'welcome' : welcome,
             }
-        return HttpResponse(template.render(context,request))
-    else:
-        return render(request, 'error.html')
+            return HttpResponse(template.render(context,request))
+        else:
+            return render(request, 'error.html')
